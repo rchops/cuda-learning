@@ -1,4 +1,6 @@
 ## Setup
+
+### For Windows
 #### Arrange folders:
 ```
 <folder>/
@@ -21,3 +23,6 @@ To run:
 ```cl
 main.exe
 ```
+
+### For Linux
+- Cuda toolkit installed - reopening folder in WSL works too
