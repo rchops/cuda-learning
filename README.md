@@ -26,3 +26,8 @@ main.exe
 
 ### For Linux
 - Cuda toolkit installed - reopening folder in WSL works too
+
+To compile programs:
+```cl
+nvcc main.cu -o main.exe
+```
