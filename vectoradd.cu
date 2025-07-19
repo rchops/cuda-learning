@@ -70,5 +70,48 @@ int main(){
     int num_blocks = (N + BLOCK_SIZE - 1) / BLOCK_SIZE;
     // N = 1024, BLOCK_SIZE = 256, num_blocks = (1024 + 256 - 1) / 256 = 4
     // This is used instead of N / BLOCK_SIZE to make sure the value is rounded up so all threads are covered
-    // If N is not divisible by BLOCK_SIZE it will round down, so N / BLOCK_SIZE would not work because it was miss needed threads
+    // If N is not divisible by BLOCK_SIZE it will round down, so N / BLOCK_SIZE would not work because it will miss needed threads
+
+    // Warm-up for benchmarking
+    printf("Warming up GPU...\n");
+    vecAddCpu(h_a, h_b, h_c_cpu, N);
+    vecAddGpu<<<num_blocks, BLOCK_SIZE>>>(d_a, d_b, d_c, N);
+    cudaDeviceSynchronize();
+
+    // Benchmark CPU
+    printf("Benchmarking CPU...\n");
+    double cpu_total_time = 0.0;
+    for(int i = 0; i < 20; ++i){
+        double start_time = getTime();
+        vecAddCpu(h_a, h_b, h_c_cpu, N);
+        double end_time = getTime();
+        cpu_total_time += end_time - start_time;
+    }
+    double average_cpu_time = cpu_total_time / 20.0;
+
+    // Benchmark GPU
+    printf("Benchmarking GPU...\n");
+    double gpu_total_time = 0.0;
+    for(int i = 0; i < 20; ++i){
+        double start_time = getTime();
+        vecAddGpu<<<num_blocks, BLOCK_SIZE>>>(d_a, d_b, d_c, N);
+        cudaDeviceSynchronize();
+        double end_time = getTime();
+        gpu_total_time += end_time - start_time;
+    }
+    double average_gpu_time = gpu_total_time / 20.0;
+
+    printf("Average CPU time: %f milliseconds\n", average_cpu_time * 1000);
+    printf("Average GPU time: %f milliseconds\n", average_gpu_time * 1000);
+    printf("Speedup: %f\n", average_cpu_time / average_gpu_time);
+
+    free(h_a);
+    free(h_b);
+    free(h_c_cpu);
+    free(h_c_gpu);
+    cudaFree(d_a);
+    cudaFree(d_b);
+    cudaFree(d_c);
+
+    return 0;
 }
