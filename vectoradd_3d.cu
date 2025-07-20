@@ -33,6 +33,9 @@ __global__ void vecAddGpu3D(float *a, float *b, float *c, int nx, int ny, int nz
         int idx = i + j * nx + k * nx * ny;
         c[idx] = a[idx] + b[idx];
     }
+
+    // the 3D implementation uses a lot more functions, so only use it when necessary
+    // e.g. when working with a 3D space or data
 }
 
 void init_vector(float *vec, int n){
