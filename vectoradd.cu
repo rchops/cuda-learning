@@ -21,9 +21,13 @@ void vecAddCpu(float * a, float *b, float *c, int n){
 
 // gpu vec addition
 __global__ void vecAddGpu(float *a, float *b, float *c, int n){
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int i = blockIdx.x * blockDim.x + threadIdx.x; 
+    // index of block we are at (number of blocks) * size of block (number of threads) +  whatever thread we are at
+    // gives us the thread in that line of the grid -> thread index -> one for each element in vector (i < n)
     if(i < n) {
-        c[i] = a[i] + b[i]; // unrolls loop -> paralleizes across threads
+        c[i] = a[i] + b[i]; 
+        // use thread index to access elements in vector and add
+        // unrolls loop -> paralleizes across threads
     }
 }
 
@@ -103,7 +107,7 @@ int main(){
 
     printf("Average CPU time: %f milliseconds\n", average_cpu_time * 1000);
     printf("Average GPU time: %f milliseconds\n", average_gpu_time * 1000);
-    printf("Speedup: %f\n", average_cpu_time / average_gpu_time);
+    printf("Speedup: %fx\n", average_cpu_time / average_gpu_time);
 
     free(h_a);
     free(h_b);
