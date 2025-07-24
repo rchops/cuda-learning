@@ -32,7 +32,8 @@ void matMulCpu(float *A, float *B, float *C, int m, int k, int n){
         for(int j = 0; j < n; ++j){
             float sum = 0.0f;
             for(int l = 0; l < k; ++l){
-                sum += A[i * k + l] * B[l * n + j];
+                sum += A[i * k + l] * B[l * n + j]; // A[row * num_cols + col]
+                // A(i = row_idx, k = num_col in A, l = idx of current col) * B[l = row_idx, n = num_col in B, j = idx of current col]
             }
         }
     }
@@ -43,10 +44,10 @@ __global__ void matMulGpu(float *A, float *B, float *C, int m, int k, int n){
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if(row < m && col < n){
+    if(row < m && col < n){ // wihtout the if the function will try to access out of bounds memory
         float sum = 0.0f;
         for(int l = 0; l < k; ++l){
-            sum += A[row * k + l] * B[l * n + col];
+            sum += A[row * k + l] * B[l * n + col]; // same principle as CPU -> A[row * num_cols + col] * B[row * num_cols + col]
         }
         C[row * n + col] = sum;
     }
